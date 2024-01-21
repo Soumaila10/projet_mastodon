@@ -1,0 +1,7 @@
+---
+- name: Installer PostgreSQL
+  hosts: bd
+  become: yes
+
+  roles:
+   - roles/postgresql

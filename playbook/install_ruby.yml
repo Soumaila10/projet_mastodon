@@ -1,0 +1,6 @@
+---
+- name: Install Ruby
+  hosts: web php
+  become: yes
+  roles:
+    - roles/ruby

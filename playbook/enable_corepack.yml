@@ -1,0 +1,6 @@
+---
+- name: Enable Corepack and Set Yarn Version
+  hosts: web
+  become: yes
+  roles:
+    - roles/enable-corepack

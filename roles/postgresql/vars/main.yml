@@ -1,0 +1,9 @@
+---
+# vars file for postgresql
+database_name: "db_mastodon"
+database_password: "password"
+ansible_user: "soumaila"
+
+postgresql_version: "15"  # Remplacez par la version réelle de PostgreSQL sur votre système
+ansible_ip: "10.42.42.3"  # Remplacez par l'adresse IP de la machine Ansible
+web_ip: "10.42.42.4"

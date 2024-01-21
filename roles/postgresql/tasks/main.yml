@@ -1,0 +1,82 @@
+---
+# tasks file for postgresql
+
+# my_postgresql_repo_role/tasks/main.yml
+- name: Télécharger la clé PostgreSQL
+  command: "wget -O /usr/share/keyrings/postgresql.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+
+- name: Ajouter la source de paquets PostgreSQL
+  copy:
+    content: "deb [signed-by=/usr/share/keyrings/postgresql.asc] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main"
+    dest: /etc/apt/sources.list.d/postgresql.list
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Ajouter la source de paquets PostgreSQL
+  blockinfile:
+    path: /etc/apt/sources.list.d/postgresql.list
+    block: |
+      deb [signed-by=/usr/share/keyrings/postgresql.asc] http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main
+
+- name: Installer PostgreSQL
+  apt:
+    name: postgresql
+    state: present
+  when: "'Debian' in ansible_os_family or 'Ubuntu' in ansible_os_family"
+
+- name: Installer PostgreSQL
+  yum:
+    name: postgresql-server
+    state: present
+  when: "'RedHat' in ansible_os_family or 'CentOS' in ansible_os_family"
+
+- name: Modifier le fichier postgresql.conf
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    regexp: "^#?listen_addresses"
+    line: "listen_addresses = '*'"
+  notify: Reload PostgreSQL
+
+- name: Autoriser les connexions pour l'utilisateur postgres depuis l'adresse IP d'Ansible
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    line: "host    all              postgres             0.0.0.0/32            trust"
+  notify: Reload PostgreSQL
+
+- name: Démarrer et activer le service PostgreSQL
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Créer un utilisateur avec des privilèges sudo
+  user:
+    name: "{{ ansible_user }}"
+    groups: sudo
+    append: yes
+
+- name: Créer la base de données
+  postgresql_db:
+    name: "{{ database_name }}"
+    state: present
+  become_user: postgres
+  become: false
+
+- name: Créer l'utilisateur PostgreSQL
+  postgresql_user:
+    db: "{{ database_name }}"
+    name: postgres
+    password: "{{ database_password }}"
+    priv: "*.*:ALL"
+    state: present
+  become_user: postgres
+
+
+
+
+
+
+
+    
+

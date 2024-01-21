@@ -1,0 +1,19 @@
+---
+# tasks file for smtp
+
+- name: Installer Postfix
+  apt:
+    name: postfix
+    state: present
+  notify:
+    - Reload Postfix
+
+- name: Installer Dovecot
+  apt:
+    name: dovecot-core
+    state: present
+  notify:
+    - Reload Dovecot
+
+
+    

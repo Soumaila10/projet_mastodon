@@ -1,0 +1,14 @@
+---
+# tasks file for ruby
+- name: Update package cache
+  ansible.builtin.apt:
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+- name: Install Ruby and dependencies on Debian-based systems
+  ansible.builtin.apt:
+    name:
+    - ruby-full
+    - build-essential
+    state: present
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'

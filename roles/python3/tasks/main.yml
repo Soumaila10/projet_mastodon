@@ -1,0 +1,19 @@
+- name: Installer Python 3 sur Debian/Ubuntu
+  apt:
+    name: python3
+  when: "'Debian' in ansible_os_family or 'Ubuntu' in ansible_os_family"
+
+- name: Installer Python 3 sur Red Hat/CentOS
+  yum:
+    name: python3
+  when: "'RedHat' in ansible_os_family or 'CentOS' in ansible_os_family"
+
+- name: Installer psycopg2
+  apt:
+    name: python3-psycopg2
+  when: "'Debian' in ansible_os_family or 'Ubuntu' in ansible_os_family"
+
+- name: Installer psycopg2
+  yum:
+    name: python3-psycopg2
+  when: "'RedHat' in ansible_os_family or 'CentOS' in ansible_os_family"

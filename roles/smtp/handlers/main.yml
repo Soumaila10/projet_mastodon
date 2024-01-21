@@ -1,0 +1,11 @@
+---
+# handlers file for smtp
+- name: Reload Postfix
+  service:
+    name: postfix
+    state: reloaded
+
+- name: Reload Dovecot
+  service:
+    name: dovecot
+    state: reloaded

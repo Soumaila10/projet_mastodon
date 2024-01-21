@@ -1,0 +1,29 @@
+---
+# tasks file for nodejs
+- name: Installer curl (nécessaire pour récupérer le script d'installation de Node.js)
+  apt:
+    name: curl
+    state: present
+  when: "'Debian' in ansible_os_family or 'Ubuntu' in ansible_os_family"
+
+- name: Installer curl (nécessaire pour récupérer le script d'installation de Node.js)
+  yum:
+    name: curl
+    state: present
+  when: "'RedHat' in ansible_os_family or 'CentOS' in ansible_os_family"
+
+- name: Installer Node.js
+  shell: >
+    curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    && sudo apt-get install -y nodejs
+  args:
+    executable: /bin/bash
+  when: "'Debian' in ansible_os_family or 'Ubuntu' in ansible_os_family"
+
+- name: Installer Node.js
+  shell: >
+    curl -fsSL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
+    && sudo yum install -y nodejs
+  args:
+    executable: /bin/bash
+  when: "'RedHat' in ansible_os_family or 'CentOS' in ansible_os_family"

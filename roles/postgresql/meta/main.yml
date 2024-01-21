@@ -1,0 +1,5 @@
+galaxy_info:
+  author: Soumaila Coulibaly
+  description: Un rôle Ansible pour installer PostgreSQL, démarrer le service, et créer une base de données.
+  license: MIT
+  min_ansible_version: "2.10"

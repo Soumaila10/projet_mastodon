@@ -1,0 +1,6 @@
+---
+# handlers file for postgresql
+- name: Reload PostgreSQL
+  systemd:
+    name: postgresql
+    state: restarted

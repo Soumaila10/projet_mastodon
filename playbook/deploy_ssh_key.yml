@@ -1,0 +1,10 @@
+---
+
+# A exécuter avec :
+# ansible-playbook --ask-pass playbook-ssh.yml
+
+- name: Déploiement de la clé SSH
+  hosts: all
+  gather_facts: no
+  roles:
+    - roles/key-ssh

@@ -1,0 +1,5 @@
+---
+# vars file for cle-sssh
+ssh_user: "soumaila"
+ssh_public_key_path: "~/.ssh/id_ed25519.pub"
+

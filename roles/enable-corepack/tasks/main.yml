@@ -1,0 +1,15 @@
+---
+- name: Enable Corepack
+  become: true
+  npm:
+    name: corepack
+    global: yes
+    state: present
+- name: Install Yarn
+  become: true
+  apt:
+    name: yarn
+    state: present
+- name: Set Yarn version to classic
+  become: true
+  shell: yarn set version classic

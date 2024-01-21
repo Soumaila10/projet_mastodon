@@ -1,0 +1,7 @@
+# my_ssh_connection_role/meta/main.yml
+---
+galaxy_info:
+  author: Soumaila Coulibaly
+  description: Un rôle Ansible pour configurer une connexion SSH avec une clé.
+  license: MIT
+  min_ansible_version: "2.10"

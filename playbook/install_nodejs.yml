@@ -1,0 +1,7 @@
+---
+
+- name: Installer Node.js
+  hosts: web
+  become: yes
+  roles:
+    - roles/nodejs
