@@ -1,61 +1,63 @@
 ---
-- name: Créer l'utilisateur mastodon
-  ansible.builtin.user:
+- name: installation de mastodon
+  hosts: web
+  become: yes
+  tasks:
+  - name: Créer l'utilisateur mastodon
+    ansible.builtin.user:
       name: mastodon
-      password: "{{ 'password_encrypted' | password_hash('sha512') }}"
+      password: "password"
       state: present
       groups: admin
       append: yes
 
-- name: Donner des privilèges root à l'utilisateur mastodon
-  ansible.builtin.become_user:
-    name: root
-  ansible.builtin.lineinfile:
-    dest: /etc/sudoers
-    line: "mastodon ALL=(ALL:ALL) ALL"
-    validate: 'visudo -cf %s'
+  - name: Donner des privilèges root à l'utilisateur mastodon
+    ansible.builtin.lineinfile:
+      dest: /etc/sudoers
+      line: "mastodon ALL=(ALL:ALL) ALL"
+      validate: 'visudo -cf %s'
+      become_user: root
 
-- name: Définir la configuration du fichier sudoers
-  ansible.builtin.copy:
-    content: "Defaults:mastodon !requiretty\n"
-    dest: /etc/sudoers.d/mastodon
+  - name: Définir la configuration du fichier sudoers
+    ansible.builtin.copy:
+      content: "Defaults:mastodon !requiretty\n"
+      dest: /etc/sudoers.d/mastodon
 
-- name: S'assurer que le fichier sudoers.d a les bonnes permissions
-  ansible.builtin.file:
-    path: /etc/sudoers.d/mastodon
-    owner: root
-    group: root
-    mode: '0440'
+  - name: S'assurer que le fichier sudoers.d a les bonnes permissions
+    ansible.builtin.file:
+      path: /etc/sudoers.d/mastodon
+      owner: root
+      group: root
+      mode: '0440'
 
-# Installation de rbenv et ruby-build
+    # Installation de rbenv et ruby-build
+  - name: Clone le dépôt rbenv
+    ansible.builtin.git:
+      repo: https://github.com/rbenv/rbenv.git
+      dest: ~/.rbenv
+      version: main
 
-- name: Clone le dépôt rbenv
-  ansible.builtin.git:
-    repo: https://github.com/rbenv/rbenv.git
-    dest: ~/.rbenv
-    version: main
+  - name: Ajoute la configuration rbenv au fichier .bashrc
+    ansible.builtin.lineinfile:
+      path: ~/.bashrc
+      line: 'export PATH="$HOME/.rbenv/bin:$PATH"'
+    notify: Reload Bash
 
-- name: Ajoute la configuration rbenv au fichier .bashrc
-  ansible.builtin.lineinfile:
-    path: ~/.bashrc
-    line: 'export PATH="$HOME/.rbenv/bin:$PATH"'
-  notify: Reload Bash
-
-- name: Clone le dépôt ruby-build dans les plugins rbenv
-  ansible.builtin.git:
-    repo: https://github.com/rbenv/ruby-build.git
-    dest: ~/.rbenv/plugins/ruby-build
-    version: main
-
-  handlers:
-    - name: Reload Bash
+  - name: Clone le dépôt ruby-build dans les plugins rbenv
+    ansible.builtin.git:
+      repo: https://github.com/rbenv/ruby-build.git
+      dest: ~/.rbenv/plugins/ruby-build
+      version: main
+        
+      handlers:
+      - name: Reload Bash
       ansible.builtin.shell: exec bash
 
-#Installation de Ruby 3.2.2 avec rbenv
+  # Installation de Ruby 3.2.2 avec rbenv
 
-- name: Installer les dépendances nécessaires pour la construction de Ruby
-  ansible.builtin.package:
-    name:
+  - name: Installer les dépendances nécessaires pour la construction de Ruby
+    ansible.builtin.package:
+      name:
       - autoconf
       - bison
       - build-essential
@@ -69,23 +71,22 @@
       - libgdbm-dev
       - libjemalloc-dev
 
-- name: Installer Ruby 3.2.2 avec rbenv et jemalloc
-  ansible.builtin.shell: |
-    export RUBY_CONFIGURE_OPTS="--with-jemalloc"
-    rbenv install 3.2.2
-  args:
-    executable: /bin/bash
+  - name: Installer Ruby 3.2.2 avec rbenv et jemalloc
+    ansible.builtin.shell: |
+      export RUBY_CONFIGURE_OPTS="--with-jemalloc"
+      rbenv install 3.2.2
+    args:
+      executable: /bin/bash
+  - name: Définir Ruby 3.2.2 comme la version globale avec rbenv
+    ansible.builtin.shell: rbenv global 3.2.2
+    args:
+      executable: /bin/bash
 
-- name: Définir Ruby 3.2.2 comme la version globale avec rbenv
-  ansible.builtin.shell: rbenv global 3.2.2
-  args:
-    executable: /bin/bash
-
-- name: Ajouter la configuration rbenv au fichier .bashrc
-  ansible.builtin.lineinfile:
-    path: ~/.bashrc
-    line: 'eval "$(rbenv init -)"'
-  notify: Reload Bash
+  - name: Ajouter la configuration rbenv au fichier .bashrc
+    ansible.builtin.lineinfile:
+      path: ~/.bashrc
+      line: 'eval "$(rbenv init -)"'
+    notify: Reload Bash
 
   handlers:
     - name: Reload Bash
@@ -93,44 +94,44 @@
       args:
         executable: /bin/bash
 
-# Installation de Bundler
+  # Installation de Bundler
 
-- name: Installer le gem Bundler
-  ansible.builtin.command: "gem install bundler --no-document"
+    - name: Installer le gem Bundler
+      ansible.builtin.command: "gem install bundler --no-document"
 
 # Clone and checkout Mastodon repository
 
 - name: Clone the Mastodon repository
-  nsible.builtin.git:
+  ansible.builtin.git:
     repo: https://github.com/mastodon/mastodon.git
-    dest: /path/to/your/directory/live
-
+    dest: ~/soumaila/projet_mastodon
+    version: "2.9" 
+    
 - name: Change to the Mastodon repository directory
   ansible.builtin.command:
-    cmd: cd /path/to/your/directory/live
+    cmd: cd ~/soumaila/projet_mastodon
 
 - name: Checkout the latest Mastodon version
   ansible.builtin.shell:
     cmd: git checkout $(git tag -l | grep '^v[0-9.]*$' | sort -V | tail -n 1)
-    chdir: /path/to/your/directory/live
+    chdir: ~/soumaila/projet_mastodon
 
 # Mastodon Deployment Setup
 - name: Set bundle configuration for deployment
   ansible.builtin.command: "bundle config deployment 'true'"
   args:
-    chdir: /path/to/your/directory/live
+    chdir: ~/soumaila/projet_mastodon
 
 - name: Set bundle configuration to exclude development and test groups
   ansible.builtin.command: "bundle config without 'development test'"
   args:
-    chdir: /path/to/your/directory/live
+  chdir: ~/soumaila/projet_mastodon
 
 - name: Install Ruby dependencies with Bundler
   ansible.builtin.command: "bundle install -j$(getconf _NPROCESSORS_ONLN)"
   args:
-        chdir: /path/to/your/directory/live
-
+    chdir: ~/soumaila/projet_mastodon
 - name: Install Node.js dependencies with Yarn
   ansible.builtin.command: "yarn install --pure-lockfile"
   args:
-    chdir: /path/to/your/directory/live
+    chdir: ~/soumaila/projet_mastodon

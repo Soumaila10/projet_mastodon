@@ -41,7 +41,7 @@
 - name: Autoriser les connexions pour l'utilisateur postgres depuis l'adresse IP d'Ansible
   lineinfile:
     path: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
-    line: "host    all              postgres             0.0.0.0/32            trust"
+    line: "host    all              postgres             10.42.42.4/32            trust"
   notify: Reload PostgreSQL
 
 - name: Démarrer et activer le service PostgreSQL
