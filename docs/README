@@ -1,0 +1,12 @@
+Soumaila Coulibaly
+Serigne Saliou SECK
+GBANE Ahamadou Yaya
+
+pour que le projet marche/
+
+/etc/popstgresql/15/main/pg_hba.conf == > remplacer peer en trust
+sudo visudo ==> metrre la ligne mastodon ALL = (ALL:ALL) ALL
+
+
+- Pour lancer l'installation de mastodon 
+ansible-playbook -i inventory.ini --ask-pass playbook/install_mastodon.yml
