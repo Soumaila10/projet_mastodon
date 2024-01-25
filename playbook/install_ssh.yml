@@ -1,6 +1,6 @@
 ---
 - name: Install SSH Server on all devices
-  hosts: all
+  hosts: web
   become: yes
   roles:
     - roles/ssh

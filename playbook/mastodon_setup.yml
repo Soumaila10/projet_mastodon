@@ -1,0 +1,6 @@
+---
+- name: Installer et configurer Mastodon
+  hosts: web
+  become: true
+  roles:
+    - roles/mastodon-setup

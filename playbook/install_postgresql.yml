@@ -1,6 +1,6 @@
 ---
 - name: Installer PostgreSQL
-  hosts: bd
+  hosts: web
   become: yes
 
   roles:

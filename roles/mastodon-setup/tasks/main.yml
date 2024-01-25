@@ -1,0 +1,41 @@
+---
+# tasks file for mastodon-setup
+
+- name: Assurer les droits d'accès au répertoire Mastodon
+  become_user: root
+  file:
+    path: "/home/soumaila/projet_mastodon"
+    state: directory
+    owner: mastodon
+    group: mastodon
+    mode: "0755"
+  tags: 
+    - directory_permissions
+
+- name: Passer à l'utilisateur Mastodon
+  become: true
+  become_user: mastodon
+  shell: /bin/bash
+  environment:
+    ANSIBLE_CONFIG: ""
+
+- name: Télécharger la dernière version de Mastodon
+  become: true
+  become_user: mastodon
+  shell: |
+    git clone https://github.com/mastodon/mastodon.git live && cd live
+    git checkout $(git tag -l | grep '^v[0-9.]*$' | sort -V | tail -n 1)
+
+- name: Installer les dépendances (Ruby et JavaScript)
+  become: true
+  become_user: mastodon
+  shell: |
+    bundle config deployment 'true'
+    bundle config without 'development test'
+    bundle install -j$(getconf _NPROCESSORS_ONLN)
+    yarn install --pure-lockfile
+
+- name: Générer la configuration de Mastodon
+  become: true
+  become_user: mastodon
+  shell: RAILS_ENV=production bundle exec rake mastodon:setup

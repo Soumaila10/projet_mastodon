@@ -2,17 +2,6 @@
 - name: Installer un serveur SMTP
   hosts: web
   become: yes
-  tasks:
-    - name: Installation des paquets
-      apt:
-        name:
-          - curl
-          - wget
-          - gnupg
-          - apt-transport-https
-          - lsb-release
-          - ca-certificates
-        state: present
   roles:
     - roles/smtp
 

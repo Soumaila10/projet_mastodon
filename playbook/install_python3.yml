@@ -1,5 +1,5 @@
 - name: Installer Python 3
-  hosts: all
+  hosts: web
   become: true
   roles:
     - roles/python3

@@ -1,14 +1,30 @@
 ---
-# tasks file for ruby
-- name: Update package cache
-  ansible.builtin.apt:
-    update_cache: yes
-  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+# Installer Ruby pour Mastodon # 
 
-- name: Install Ruby and dependencies on Debian-based systems
-  ansible.builtin.apt:
-    name:
-    - ruby-full
-    - build-essential
-    state: present
-  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+- name: Créer un compte utilisateur Mastodon
+  user:
+    name: mastodon
+    system: yes
+    shell: /bin/bash
+    createhome: yes
+
+- name: Passer à l'utilisateur Mastodon
+  become: true
+  become_user: mastodon
+  shell: /bin/bash
+
+- name: Installer rbenv
+  command: >
+    git clone https://github.com/rbenv/rbenv.git ~/.rbenv &&
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc &&
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc &&
+    exec bash &&
+    git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+- name: Installer Ruby 3.2.3 avec rbenv
+  shell: RUBY_CONFIGURE_OPTS=--with-jemalloc rbenv install 3.2.3 && rbenv global 3.2.3
+  become_user: mastodon
+
+- name: Installer Bundler
+  shell: gem install bundler --no-document
+  become_user: mastodon

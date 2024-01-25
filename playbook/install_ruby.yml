@@ -1,6 +1,6 @@
 ---
 - name: Install Ruby
-  hosts: web php
+  hosts: web
   become: yes
   roles:
     - roles/ruby
