@@ -1,17 +1,6 @@
 ---
 # tasks file for mastodon-setup
 
-- name: Assurer les droits d'accès au répertoire Mastodon
-  become_user: root
-  file:
-    path: "/home/soumaila/projet_mastodon"
-    state: directory
-    owner: mastodon
-    group: mastodon
-    mode: "0755"
-  tags: 
-    - directory_permissions
-
 - name: Passer à l'utilisateur Mastodon
   become: true
   become_user: mastodon
